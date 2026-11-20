@@ -1,0 +1,16 @@
+English Ninja — art and sound credits (copied by tools/english_assets.py)
+
+Ninja Adventure Asset Pack — Pixel-boy & AAA
+  https://pixel-boy.itch.io/ninja-adventure-asset-pack — CC0 1.0
+  heroes/, people/, creatures/, animals/, TilesetFloor.png, tiles/TilesetDesert.png,
+  tiles/TilesetVillageAbandoned.png, tiles/TilesetTowers.png, tiles/TilesetInteriorFloor.png,
+  tiles/TilesetClouds.png, fx/Shuriken.png, fx/Smoke.png, fx/Leaf.png, fx/Clouds.png, fx/Spark.png,
+  music/ (Good Time, Temple, Dungeon, Calm Village, Ascension), sfx/
+
+Kenney (Kenney Vleugels) — https://kenney.nl — CC0 1.0
+  Tiny Dungeon: tiles/KenneyTinyDungeon.png
+  Tiny Town:    tiles/KenneyTinyTown.png
+  Particle Pack: fx/k_*.png (shrunk to 128 px)
+
+Word pictures (english/img): Twemoji — © Twitter, Inc. and other contributors, CC-BY 4.0
+  https://github.com/jdecked/twemoji
