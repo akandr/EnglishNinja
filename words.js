@@ -4,7 +4,7 @@
 
 let V = null;
 export async function loadVocab() {
-  if (!V) V = await (await fetch(new URL('./vocab.json?v=' + Date.now().toString(36).slice(0, -5), import.meta.url).href)).json();
+  if (!V) V = await (await fetch(new URL('./vocab.json?v=' + Date.now().toString(36).slice(0, -5), import.meta.url).href, { cache: 'no-cache' })).json();
   return V;
 }
 export const cats = () => V.cats;

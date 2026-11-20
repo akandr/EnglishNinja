@@ -6,7 +6,7 @@
 let data = null;
 export async function loadFactPics() {
   if (!data) {
-    try { data = await (await fetch(new URL('./fact_pics.json?v=' + Date.now().toString(36).slice(0, -5), import.meta.url).href)).json(); }
+    try { data = await (await fetch(new URL('./fact_pics.json?v=' + Date.now().toString(36).slice(0, -5), import.meta.url).href, { cache: 'no-cache' })).json(); }
     catch (_) { data = {}; }
   }
   return data;
