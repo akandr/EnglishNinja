@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>English Ninja</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="style.css?v=115" />
+</head>
+<body>
+  <div id="menu" class="screen">
+    <h1 class="title">English <span>Ninja</span></h1>
+    <p class="sub">Wędrówka przez pięć krain. Na każdym placu głos mówi po angielsku, czego szukasz — wejdź na kamień z tym obrazkiem.</p>
+    <p>Co ćwiczymy?</p>
+    <div id="cat-list" class="chips"></div>
+    <label class="opt"><input id="opt-polish" type="checkbox"> 🇵🇱 Po dobrej odpowiedzi przeczytaj też polskie słowo (dla zupełnie początkujących; napis po polsku jest zawsze)</label>
+    <label class="opt"><input id="opt-monsters" type="checkbox" checked> 👾 Potwory (złap monetę i zjedz potwora; środkiem ścieżki zawsze da się przejść)</label>
+    <button id="start-btn" class="big">▶ Start</button>
+    <p class="hint">Sterowanie: strzałki / WASD albo przeciągnij palcem po ekranie. Spacja — powtórz słówko, P — pauza.</p>
+    <div class="credits">
+      <h3>O grze</h3>
+      <p><b>English Ninja</b> — gra do nauki angielskich słówek, siostra <a href="/liczbowy_ninja/">Liczbowego Ninja</a>.</p>
+      <dl>
+        <dt>Autor</dt><dd>Artur Andrzejczak — <a href="https://akandr.cc" target="_blank" rel="noopener">akandr.cc</a><br><span class="muted">stworzone z pomocą Claude Opus 5.5 (Anthropic)</span></dd>
+        <dt>Kod</dt><dd>© 2026 Artur Andrzejczak, GNU AGPL v3.</dd>
+        <dt>Grafika, muzyka, efekty</dt><dd><a href="https://pixel-boy.itch.io/ninja-adventure-asset-pack" target="_blank" rel="noopener">Ninja Adventure Asset Pack</a> — Pixel-boy &amp; AAA, CC0.</dd>
+        <dt>Obrazki słówek</dt><dd><a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a> — © Twitter, Inc. i inni, CC-BY 4.0.</dd>
+        <dt>Głos</dt><dd>Syntezator mowy Microsoft Edge (głosy neuronowe Sonia, Ava, Andrew; polskie słowa — Zofia).</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div id="game" class="screen hidden">
+    <canvas id="canvas"></canvas>
+    <div id="hud">
+      <div id="q-box"><span id="q-text">…</span><button id="say-btn" title="Powtórz słówko (spacja)">🔊</button></div>
+      <div id="dots"></div>
+      <div id="gem-box" class="hidden"></div>
+      <div class="right"><button id="pause-btn" title="Pauza (P)">⏸</button><button id="mute-btn" title="Wycisz">🔊</button><button id="back-btn" title="Menu">⏏</button></div>
+    </div>
+    <div id="npc-bubble" class="hidden"><b id="npc-name"></b><span id="npc-text"></span><small id="npc-pl"></small></div>
+    <div id="pause-box" class="hidden"><div class="card"><b>Pauza</b><span>Naciśnij P albo ⏸, żeby iść dalej.</span></div></div>
+    <div id="loading-overlay" class="hidden"><div class="card">
+      <p id="loading-text">Ładowanie…</p><div class="track"><div id="loading-fill"></div></div>
+      <button id="loading-play-btn" class="big hidden">▶ Graj</button>
+    </div></div>
+    <div id="win-screen" class="hidden"><div class="card win">
+      <div class="emoji">🏆</div><h2>Skarb zdobyty!</h2><div id="win-stars" class="stars"></div>
+      <ul id="win-stats"></ul>
+      <details id="win-facts"><summary>Co mówiły postacie</summary><div id="win-facts-body"></div></details>
+      <div class="btns"><button id="win-again" class="big">↻ Jeszcze raz</button><button id="win-menu" class="big alt">⏏ Menu</button></div>
+    </div></div>
+  </div>
+  <script type="module" src="menu.js?v=126"></script>
+</body>
+</html>

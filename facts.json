@@ -1,0 +1,732 @@
+{
+ "facts": [
+  {
+   "id": "e001",
+   "text": "Cows give us milk.",
+   "pl": "Krowy dają nam mleko.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e002",
+   "text": "Bees make honey.",
+   "pl": "Pszczoły robią miód.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e003",
+   "text": "A spider has eight legs.",
+   "pl": "Pająk ma osiem nóg.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e004",
+   "text": "Fish live in water.",
+   "pl": "Ryby żyją w wodzie.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e005",
+   "text": "Birds have feathers.",
+   "pl": "Ptaki mają pióra.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e006",
+   "text": "A frog can jump very far.",
+   "pl": "Żaba potrafi skoczyć bardzo daleko.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e007",
+   "text": "A giraffe has a very long neck.",
+   "pl": "Żyrafa ma bardzo długą szyję.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e008",
+   "text": "An elephant has a very long nose. It is called a trunk.",
+   "pl": "Słoń ma bardzo długi nos. Nazywa się trąba.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e009",
+   "text": "Penguins cannot fly, but they swim very well.",
+   "pl": "Pingwiny nie umieją latać, ale świetnie pływają.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e010",
+   "text": "A whale is not a fish. It breathes air.",
+   "pl": "Wieloryb to nie ryba. Oddycha powietrzem.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e011",
+   "text": "Dolphins like to play.",
+   "pl": "Delfiny lubią się bawić.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e012",
+   "text": "A snake has no legs.",
+   "pl": "Wąż nie ma nóg.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e013",
+   "text": "A turtle carries its house on its back.",
+   "pl": "Żółw nosi swój dom na plecach.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e014",
+   "text": "A hedgehog has spikes on its back.",
+   "pl": "Jeż ma kolce na grzbiecie.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e015",
+   "text": "Owls can see well at night.",
+   "pl": "Sowy dobrze widzą w nocy.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e016",
+   "text": "A mother kangaroo has a pocket for her baby.",
+   "pl": "Mama kangurzyca ma torbę na swoje dziecko.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e017",
+   "text": "Butterflies have very colourful wings.",
+   "pl": "Motyle mają bardzo kolorowe skrzydła.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e018",
+   "text": "A zebra has black and white stripes.",
+   "pl": "Zebra ma czarne i białe paski.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e019",
+   "text": "Pandas love to eat bamboo.",
+   "pl": "Pandy uwielbiają jeść bambus.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e020",
+   "text": "Koalas sleep a lot.",
+   "pl": "Koale dużo śpią.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e021",
+   "text": "An octopus has eight arms.",
+   "pl": "Ośmiornica ma osiem ramion.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e022",
+   "text": "Sharks have lots of teeth.",
+   "pl": "Rekiny mają mnóstwo zębów.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e023",
+   "text": "Some parrots can say words.",
+   "pl": "Niektóre papugi potrafią powtarzać słowa.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e024",
+   "text": "Dinosaurs lived a very, very long time ago.",
+   "pl": "Dinozaury żyły bardzo, bardzo dawno temu.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e025",
+   "text": "Birds lay eggs.",
+   "pl": "Ptaki znoszą jajka.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e026",
+   "text": "A horse can sleep standing up.",
+   "pl": "Koń potrafi spać na stojąco.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e027",
+   "text": "Cats like to sleep in the sun.",
+   "pl": "Koty lubią spać na słońcu.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e028",
+   "text": "Dogs have a very good nose.",
+   "pl": "Psy mają bardzo dobry nos.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e029",
+   "text": "A mouse is small. An elephant is big.",
+   "pl": "Mysz jest mała. Słoń jest duży.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e030",
+   "text": "Ducks can swim and fly.",
+   "pl": "Kaczki umieją pływać i latać.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e031",
+   "text": "Sheep give us wool.",
+   "pl": "Owce dają nam wełnę.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e032",
+   "text": "Pigs like mud.",
+   "pl": "Świnie lubią błoto.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e033",
+   "text": "A tiger has stripes.",
+   "pl": "Tygrys ma paski.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e034",
+   "text": "Monkeys can climb trees.",
+   "pl": "Małpy umieją wspinać się na drzewa.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e035",
+   "text": "A crocodile has a long tail.",
+   "pl": "Krokodyl ma długi ogon.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e036",
+   "text": "Rabbits have long ears.",
+   "pl": "Króliki mają długie uszy.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e037",
+   "text": "A fox has a big, fluffy tail.",
+   "pl": "Lis ma duży, puszysty ogon.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e038",
+   "text": "A hen lays eggs.",
+   "pl": "Kura znosi jajka.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e039",
+   "text": "A bee has six legs.",
+   "pl": "Pszczoła ma sześć nóg.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e040",
+   "text": "The Sun is a star.",
+   "pl": "Słońce jest gwiazdą.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e041",
+   "text": "The Moon goes around the Earth.",
+   "pl": "Księżyc krąży wokół Ziemi.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e042",
+   "text": "The Earth goes around the Sun.",
+   "pl": "Ziemia krąży wokół Słońca.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e043",
+   "text": "We live on planet Earth.",
+   "pl": "Mieszkamy na planecie Ziemia.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e044",
+   "text": "Saturn has beautiful rings.",
+   "pl": "Saturn ma piękne pierścienie.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e045",
+   "text": "Mars is the red planet.",
+   "pl": "Mars to czerwona planeta.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e046",
+   "text": "Jupiter is the biggest planet in our Solar System.",
+   "pl": "Jowisz to największa planeta w Układzie Słonecznym.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e047",
+   "text": "Eight planets go around the Sun.",
+   "pl": "Wokół Słońca krąży osiem planet.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e048",
+   "text": "Stars are very, very far away.",
+   "pl": "Gwiazdy są bardzo, bardzo daleko.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e049",
+   "text": "A rainbow has seven colours.",
+   "pl": "Tęcza ma siedem kolorów.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e050",
+   "text": "Rain comes from clouds.",
+   "pl": "Deszcz pada z chmur.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e051",
+   "text": "Snow is frozen water.",
+   "pl": "Śnieg to zamarznięta woda.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e052",
+   "text": "Ice is cold and hard.",
+   "pl": "Lód jest zimny i twardy.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e053",
+   "text": "Plants need water and sun.",
+   "pl": "Rośliny potrzebują wody i słońca.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e054",
+   "text": "Trees give us oxygen.",
+   "pl": "Drzewa dają nam tlen.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e055",
+   "text": "A volcano has very hot rock inside.",
+   "pl": "Wulkan ma w środku bardzo gorące skały.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e056",
+   "text": "Sea water is salty.",
+   "pl": "Woda w morzu jest słona.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e057",
+   "text": "After lightning, we hear thunder.",
+   "pl": "Po błyskawicy słyszymy grzmot.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e058",
+   "text": "Leaves are green in summer.",
+   "pl": "Liście są zielone latem.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e059",
+   "text": "In autumn, leaves turn red, yellow and orange.",
+   "pl": "Jesienią liście robią się czerwone, żółte i pomarańczowe.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e060",
+   "text": "A cactus can live with very little water.",
+   "pl": "Kaktus może żyć z bardzo małą ilością wody.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e061",
+   "text": "Astronauts float in space.",
+   "pl": "Astronauci unoszą się w kosmosie.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e062",
+   "text": "Rockets fly into space.",
+   "pl": "Rakiety lecą w kosmos.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e063",
+   "text": "People have walked on the Moon.",
+   "pl": "Ludzie chodzili po Księżycu.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e064",
+   "text": "There is no air on the Moon.",
+   "pl": "Na Księżycu nie ma powietrza.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e065",
+   "text": "Water can turn into ice or steam.",
+   "pl": "Woda może zamienić się w lód albo parę.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e066",
+   "text": "A day has twenty-four hours.",
+   "pl": "Doba ma dwadzieścia cztery godziny.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e067",
+   "text": "A week has seven days.",
+   "pl": "Tydzień ma siedem dni.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e068",
+   "text": "A year has twelve months.",
+   "pl": "Rok ma dwanaście miesięcy.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e069",
+   "text": "Winter is cold. Summer is hot.",
+   "pl": "Zima jest zimna. Lato jest gorące.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e070",
+   "text": "You have two eyes and two ears.",
+   "pl": "Masz dwoje oczu i dwoje uszu.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e071",
+   "text": "You have ten fingers.",
+   "pl": "Masz dziesięć palców.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e072",
+   "text": "Your heart works all the time, day and night.",
+   "pl": "Twoje serce pracuje cały czas, w dzień i w nocy.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e073",
+   "text": "Your brain helps you think.",
+   "pl": "Mózg pomaga ci myśleć.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e074",
+   "text": "Bones make your body strong.",
+   "pl": "Kości sprawiają, że ciało jest mocne.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e075",
+   "text": "Children have twenty baby teeth.",
+   "pl": "Dzieci mają dwadzieścia zębów mlecznych.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e076",
+   "text": "You smell with your nose.",
+   "pl": "Zapachy czujesz nosem.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e077",
+   "text": "Sleep helps you grow.",
+   "pl": "Sen pomaga ci rosnąć.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e078",
+   "text": "Robots can help people.",
+   "pl": "Roboty mogą pomagać ludziom.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e079",
+   "text": "A magnet can pull iron.",
+   "pl": "Magnes przyciąga żelazo.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e080",
+   "text": "Light is faster than sound.",
+   "pl": "Światło jest szybsze niż dźwięk.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e081",
+   "text": "Ice melts when it is warm.",
+   "pl": "Lód topi się, kiedy jest ciepło.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e082",
+   "text": "A plane has wings, like a bird.",
+   "pl": "Samolot ma skrzydła, jak ptak.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e083",
+   "text": "A train goes on rails.",
+   "pl": "Pociąg jeździ po szynach.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e084",
+   "text": "Boats float on water.",
+   "pl": "Łódki unoszą się na wodzie.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e085",
+   "text": "A bike has two wheels.",
+   "pl": "Rower ma dwa koła.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e086",
+   "text": "A car has four wheels.",
+   "pl": "Samochód ma cztery koła.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e087",
+   "text": "A clock shows the time.",
+   "pl": "Zegar pokazuje godzinę.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e088",
+   "text": "Computers can count very fast.",
+   "pl": "Komputery liczą bardzo szybko.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e089",
+   "text": "Red and yellow make orange.",
+   "pl": "Czerwony i żółty dają pomarańczowy.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e090",
+   "text": "Blue and yellow make green.",
+   "pl": "Niebieski i żółty dają zielony.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e091",
+   "text": "Red and blue make purple.",
+   "pl": "Czerwony i niebieski dają fioletowy.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e092",
+   "text": "Black and white make grey.",
+   "pl": "Czarny i biały dają szary.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e093",
+   "text": "A triangle has three sides.",
+   "pl": "Trójkąt ma trzy boki.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e094",
+   "text": "A square has four sides.",
+   "pl": "Kwadrat ma cztery boki.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e095",
+   "text": "A hexagon has six sides.",
+   "pl": "Sześciokąt ma sześć boków.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e096",
+   "text": "Bees build little hexagons from wax.",
+   "pl": "Pszczoły budują z wosku małe sześciokąty.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e097",
+   "text": "Bananas grow in warm countries.",
+   "pl": "Banany rosną w ciepłych krajach.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e098",
+   "text": "Apples grow on trees.",
+   "pl": "Jabłka rosną na drzewach.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e099",
+   "text": "Carrots grow under the ground.",
+   "pl": "Marchewki rosną pod ziemią.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e100",
+   "text": "A strawberry has its seeds on the outside.",
+   "pl": "Truskawka ma nasionka na zewnątrz.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e101",
+   "text": "Bread is made from flour.",
+   "pl": "Chleb robi się z mąki.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e102",
+   "text": "Cheese is made from milk.",
+   "pl": "Ser robi się z mleka.",
+   "voice": "f",
+   "lvl": 1
+  },
+  {
+   "id": "e103",
+   "text": "Chocolate comes from cocoa beans.",
+   "pl": "Czekolada powstaje z ziaren kakao.",
+   "voice": "m",
+   "lvl": 1
+  },
+  {
+   "id": "e104",
+   "text": "Popcorn is made from corn.",
+   "pl": "Popcorn robi się z kukurydzy.",
+   "voice": "f",
+   "lvl": 1
+  }
+ ]
+}
