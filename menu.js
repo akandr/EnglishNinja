@@ -1,6 +1,6 @@
 // Menu of English Ninja: which ninja, which words, then the journey.
-import { initGame, startGame, stopGame, HEROES } from './game.js?v=127';
-import { loadVocab, cats, catById, MIX_CATS, knownCount } from './words.js?v=127';
+import { initGame, startGame, stopGame, HEROES } from './game.js?v=128';
+import { loadVocab, cats, catById, MIX_CATS, knownCount } from './words.js?v=128';
 
 const $ = (id) => document.getElementById(id);
 const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem('english_' + k)); return v ?? d; } catch (_) { return d; } };
@@ -22,12 +22,12 @@ function buildHeroes() {
     r.append(b);
   }
 }
-const list = () => [...cats(), { id: 'mix', name: 'Wszystko naraz', icon: '🎲', items: MIX_CATS.flatMap(c => catById(c).items) }];
+const list = () => [...cats(), { id: 'mix', name: 'Everything', en: 'Everything', icon: '🎲', items: MIX_CATS.flatMap(c => catById(c).items) }];
 function build() {
   const r = $('cat-list'); r.innerHTML = '';
   for (const c of list()) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip cat' + (c.id === cat ? ' on' : '');
-    b.innerHTML = `<span class="ic">${c.icon}</span> ${c.name} <small>${knownCount(c.id)}/${c.items.length}</small>`;
+    b.innerHTML = `<span class="ic">${c.icon}</span> ${c.en || c.name} <small>${knownCount(c.id)}/${c.items.length}</small>`;
     b.addEventListener('click', () => { cat = c.id; save('cat', cat); build(); });
     r.append(b);
   }
@@ -46,7 +46,7 @@ buildHeroes();
 loadVocab().then(build);
 initGame({ levelEnd({ stars, mistakes, firstTry, total, heard, gems = 0, gemsTotal = 0, monsters = 0, chased = 0 }) {
   $('win-stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-  $('win-stats').innerHTML = `<li>Dobrze za pierwszym razem: <b>${firstTry} / ${total}</b></li><li>Pomyłki: <b>${mistakes}</b></li>` + (gemsTotal ? `<li>💎 <b>${gems} / ${gemsTotal}</b></li>` : '') + (monsters ? `<li>👾 przegonione shurikenem: <b>${chased}</b></li>` : '');
-  $('win-facts-body').innerHTML = heard.length ? '<ul>' + heard.map(f => `<li>${esc(f.text)} <i>(${esc(f.pl)})</i></li>`).join('') + '</ul>' : '<p>Tym razem żadnej — następnym razem zagadaj do postaci po drodze!</p>';
+  $('win-stats').innerHTML = `<li>Right the first time: <b>${firstTry} / ${total}</b></li><li>Mistakes: <b>${mistakes}</b></li>` + (gemsTotal ? `<li>💎 <b>${gems} / ${gemsTotal}</b></li>` : '') + (monsters ? `<li>👾 chased away: <b>${chased}</b></li>` : '');
+  $('win-facts-body').innerHTML = heard.length ? '<ul>' + heard.map(f => `<li>${esc(f.text)} <i lang="pl">(${esc(f.pl)})</i></li>`).join('') + '</ul>' : '<p>None this time — next time, talk to the characters on the way!</p>';
   $('win-screen').classList.remove('hidden');
 } });

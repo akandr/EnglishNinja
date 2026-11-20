@@ -4,11 +4,12 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=127';
+import { loadAudioBuffer } from './audio.js?v=128';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=127';
-import * as W from './words.js?v=127';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=128';
+import * as W from './words.js?v=128';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=128';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -121,7 +122,7 @@ export async function initGame({ levelEnd }) {
   window.addEventListener('keydown', e => {
     if (map[e.code]) { keys[map[e.code]] = true; e.preventDefault(); }
     if ((e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyF' || e.code === 'KeyJ') && !e.repeat) { throwStar(); e.preventDefault(); }
-    if (e.code === 'KeyR') repeatQuestion();
+    if (e.code === 'KeyH' || e.code === 'KeyR') repeatQuestion();
     if (e.code === 'KeyP') togglePause();
   });
   window.addEventListener('keyup', e => { if (map[e.code]) keys[map[e.code]] = false; });
@@ -145,9 +146,10 @@ export async function startGame(c) {
   const overlay = el('loading-overlay'), fill = el('loading-fill'), text = el('loading-text');
   overlay.classList.remove('hidden'); el('loading-play-btn').classList.add('hidden');
   ctx();
-  text.textContent = 'Ładowanie głosów i muzyki…'; fill.style.width = '0%';
+  text.textContent = 'Loading voices and music…'; fill.style.width = '0%';
   const AU = new URL('./audio/', import.meta.url).href, SFX = new URL('./assets/sfx/', import.meta.url).href, MU = new URL('./assets/music/', import.meta.url).href;
   if (!facts.length) facts = (await (await fetch(new URL('./facts.json?v=' + AUDIO_VER, import.meta.url))).json());
+  await loadFactPics();
   await W.loadVocab();
   qs = W.pickRound(c.cat, 10).map(id => ({ id, options: [id, ...W.distractors(id, 3)].sort(() => Math.random() - 0.5), variant: Math.random() < 0.6 ? 1 : 2 }));
   const all = [...new Set(qs.flatMap(q => q.options))];
@@ -156,7 +158,7 @@ export async function startGame(c) {
   let done = 0; const total = names.length + SFXN.length;
   const tick = () => { fill.style.width = Math.round(++done / total * 70) + '%'; };
   await Promise.all([loadImages(), W.preloadPictures(all), ...names.map(n => loadClip(n, AU).then(tick)), ...SFXN.map(n => loadClip(n, SFX).then(tick))]);
-  text.textContent = 'Budowanie krainy…'; fill.style.width = '75%';
+  text.textContent = 'Building the land…'; fill.style.width = '75%';
   pics = new Map();
   for (const id of all) pics.set(id, await W.pictureCanvas(id, 128));
   world = buildWorld(qs, { monsters: !!c.monsters });
@@ -178,7 +180,7 @@ export async function startGame(c) {
     const f = chosen[i % chosen.length], b = BIOMES[world.biomeOf(p.x)], list = b.people[f.voice === 'f' ? 'f' : 'm'];
     return { x: (p.x + 0.5) * T, y: (p.y + 0.5) * T, fact: f, who: list[i % list.length], armed: true, awayT: 0, spoken: false, bob: Math.random() * 6 };
   });
-  text.textContent = 'Zapraszanie postaci…'; fill.style.width = '85%';
+  text.textContent = 'Inviting the storytellers…'; fill.style.width = '85%';
   await Promise.all(npcs.map(n => loadClip('npc_' + n.fact.id, AU)));
   await Promise.all(BIOMES.map(async b => {
     if (music.has(b.music)) return;
@@ -202,7 +204,7 @@ export async function startGame(c) {
   queue.length = 0; speakingUntil = 0;
   el('throw-btn').style.setProperty('--hc', HEROES[heroKey].color);
   updateHud();
-  fill.style.width = '100%'; text.textContent = 'Gotowe! Ruszaj w drogę.';
+  fill.style.width = '100%'; text.textContent = 'Ready! Off you go.';
   await new Promise(res => { const b = el('loading-play-btn'); b.classList.remove('hidden'); b.onclick = () => { b.classList.add('hidden'); ctx(); res(); }; });
   overlay.classList.add('hidden');
   running = true; paused = false; lastT = performance.now();
@@ -224,9 +226,12 @@ function updateHud() {
   else { el('q-text').textContent = '➜'; box.classList.remove('solved'); }
   el('dots').innerHTML = qs.map((_, i) => `<i class="${i < qi ? 'done' : i === qi ? 'now' : ''}"></i>`).join('');
 }
-function repeatQuestion() { if (qs && qs[qi] && activeGate === qi) { queue.length = 0; clearTimeout(qTimer); qTimer = null; const ms = speak([W.clipQ(qs[qi].id, qs[qi].variant)]); speakingUntil = performance.now() + ms + 400; } }
-function caption(name, textS, ms, pl = '') {
-  el('npc-name').textContent = name; el('npc-text').textContent = textS; el('npc-pl').textContent = pl; el('npc-bubble').classList.remove('hidden');
+function repeatQuestion() { if (running && qs && qs[qi] && finishT < 0) { queue.length = 0; clearTimeout(qTimer); qTimer = null; const ms = speak([W.clipQ(qs[qi].id, qs[qi].variant)]); speakingUntil = performance.now() + ms + 400; } }
+function caption(name, textS, ms, pl = '', factId = null) {
+  const strip = factId ? stripHtml(factId, textS, ms) : '';
+  el('npc-pics').innerHTML = strip; el('npc-pics').classList.toggle('hidden', !strip);
+  if (factId) el('npc-text').innerHTML = markWords(factId, textS); else el('npc-text').textContent = textS;
+  el('npc-name').textContent = name; el('npc-pl').textContent = pl; el('npc-bubble').classList.remove('hidden');
   clearTimeout(caption.t); caption.t = setTimeout(() => el('npc-bubble').classList.add('hidden'), ms + 800);
 }
 
@@ -288,7 +293,7 @@ function update(dt) {
     if (n.armed && d < T * 2.4 && voiceFree() && finishT < 0) {
       n.armed = false; n.awayT = 0;
       if (!n.spoken) { heard.push(n.fact); n.spoken = true; try { const s = JSON.parse(localStorage.getItem('english_facts_seen') || '[]'); s.push(n.fact.id); localStorage.setItem('english_facts_seen', JSON.stringify(s.slice(-400))); } catch (_) {} }
-      enqueue({ clips: ['npc_' + n.fact.id], gap: 900, low: true, onStart: (ms) => caption(nameOf(n.who), n.fact.text, ms, n.fact.pl) });
+      enqueue({ clips: ['npc_' + n.fact.id], gap: 900, low: true, onStart: (ms) => caption(nameOf(n.who), n.fact.text, ms, '', n.fact.id) });
     }
   }
   for (const a of animals) {

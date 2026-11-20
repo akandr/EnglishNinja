@@ -71,7 +71,7 @@
   {
    "id": "farm",
    "name": "Zwierzęta z farmy",
-   "en": "",
+   "en": "Farm animals",
    "icon": "🐮",
    "opts": 4,
    "items": [
@@ -95,7 +95,7 @@
   {
    "id": "food",
    "name": "Jedzenie",
-   "en": "",
+   "en": "Food",
    "icon": "🍎",
    "opts": 4,
    "items": [
@@ -124,7 +124,7 @@
   {
    "id": "things",
    "name": "Zabawki i rzeczy",
-   "en": "",
+   "en": "Toys and things",
    "icon": "⚽",
    "opts": 4,
    "items": [
@@ -162,7 +162,7 @@
   {
    "id": "wild",
    "name": "Dzikie zwierzęta",
-   "en": "",
+   "en": "Wild animals",
    "icon": "🦁",
    "opts": 4,
    "items": [
@@ -196,7 +196,7 @@
   {
    "id": "nature",
    "name": "Przyroda i kosmos",
-   "en": "",
+   "en": "Nature and space",
    "icon": "🌈",
    "opts": 4,
    "items": [
@@ -225,7 +225,7 @@
   {
    "id": "body",
    "name": "Ciało",
-   "en": "",
+   "en": "My body",
    "icon": "✋",
    "opts": 4,
    "items": [
