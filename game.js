@@ -4,12 +4,12 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=129';
+import { loadAudioBuffer } from './audio.js?v=130';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=129';
-import * as W from './words.js?v=129';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=129';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=130';
+import * as W from './words.js?v=130';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=130';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -139,7 +139,7 @@ export async function initGame({ levelEnd }) {
 }
 
 function togglePause() { if (!running) return; paused = !paused; el('pause-box').classList.toggle('hidden', !paused); }
-export function stopGame() { running = false; queue.length = 0; clearTimeout(qTimer); qTimer = null; speak([]); if (musicSrc) { try { musicSrc.stop(); } catch (_) {} musicSrc = null; } }
+export function stopGame() { running = false; clearTimeout(caption.t); el('npc-bubble').classList.add('hidden'); queue.length = 0; clearTimeout(qTimer); qTimer = null; speak([]); if (musicSrc) { try { musicSrc.stop(); } catch (_) {} musicSrc = null; } }
 
 export async function startGame(c) {
   cfg = c; heroKey = HEROES[c.hero] ? c.hero : 'NinjaFire';
@@ -232,7 +232,7 @@ function caption(name, textS, ms, pl = '', factId = null) {
   el('npc-pics').innerHTML = strip; el('npc-pics').classList.toggle('hidden', !strip);
   if (factId) el('npc-text').innerHTML = markWords(factId, textS); else el('npc-text').textContent = textS;
   el('npc-name').textContent = name; el('npc-pl').textContent = pl; el('npc-bubble').classList.remove('hidden');
-  clearTimeout(caption.t); caption.t = setTimeout(() => el('npc-bubble').classList.add('hidden'), ms + 800);
+  clearTimeout(caption.t); caption.t = setTimeout(() => el('npc-bubble').classList.add('hidden'), ms + (strip ? 6000 : 800));   // fact pictures stay a while after the voice
 }
 
 // --- movement against the tile grid ------------------------------------
@@ -431,6 +431,7 @@ function hit(cr, s) {
 
 function finish() {
   running = false;
+  clearTimeout(caption.t); el('npc-bubble').classList.add('hidden');
   if (musicSrc) { try { musicSrc.stop(); } catch (_) {} musicSrc = null; }
   const st = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
   onEnd && onEnd({ stars: st, mistakes, firstTry, total: qs.length, heard, gems: gemsTaken, gemsTotal: world.gems.length, monsters: mons.length, chased, thrown });

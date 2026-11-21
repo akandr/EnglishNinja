@@ -38,7 +38,7 @@ export function stripHtml(id, text, ms) {
   if (!tokens) return '';
   const at = timing(tokens, text);
   return tokens.map((t, i) => {
-    const d = `style="animation-delay:${Math.round(Math.min(at[i] * ms * 0.9, ms))}ms"`;
+    const d = `style="animation-delay:${Math.round(Math.min(at[i] * ms * 0.75, ms * 0.8))}ms"`;
     if (t.s) return `<span class="fp-sign" ${d}>${SIGN_TXT[t.s] || t.s}</span>`;
     if (t.n) return `<span class="fp-num" ${d}>${t.n}</span>`;
     if (!t.img) return `<figure ${d}><span class="fp-word">${esc(t.w)}</span></figure>`;
