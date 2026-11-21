@@ -4,13 +4,13 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=133';
+import { loadAudioBuffer } from './audio.js?v=134';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=133';
-import * as W from './words.js?v=133';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=133';
-import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=133';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=134';
+import * as W from './words.js?v=134';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=134';
+import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=134';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -18,8 +18,8 @@ const CARD_DY = T * 1.45, AIM_DY = T * 0.8;      // a creature's picture card fl
 const el = (id) => document.getElementById(id);
 const rnd = (a, b) => a + Math.random() * (b - a);
 export const HEROES = {
-  NinjaFire: { name: 'Fire Ninja', color: '#ff7a3c' }, NinjaWater: { name: 'Water Ninja', color: '#4fc3ff' },
-  NinjaThunder: { name: 'Thunder Ninja', color: '#ffe04a' }, NinjaMasked: { name: 'Snow Ninja', color: '#e8ecff' },
+  NinjaFire: { name: 'Fire Ninja', color: '#ff7a3c', el: 'fire' }, NinjaWater: { name: 'Water Ninja', color: '#4fc3ff', el: 'water' },
+  NinjaThunder: { name: 'Thunder Ninja', color: '#ffe04a', el: 'thunder' }, NinjaMasked: { name: 'Snow Ninja', color: '#e8ecff', el: 'ice' },
 };
 
 // --- images ---------------------------------------------------------------
@@ -30,6 +30,7 @@ async function loadImages() {
   const list = [['floor', 'TilesetFloor.png'], ['ifloor', 'tiles/TilesetInteriorFloor.png'], ['kd', 'tiles/KenneyTinyDungeon.png'], ['kt', 'tiles/KenneyTinyTown.png'],
     ['desert', 'tiles/TilesetDesert.png'], ['village', 'tiles/TilesetVillageAbandoned.png'], ['towers', 'tiles/TilesetTowers.png'], ['clouds', 'tiles/TilesetClouds.png'],
     ['leaf', 'fx/Leaf.png'], ['spark', 'fx/Spark.png'], ['shuriken', 'fx/Shuriken.png'], ['smoke', 'fx/Smoke.png']];
+  for (const e of ['flam', 'fire', 'water', 'thunder', 'ice', 'flake', 'snow']) list.push(['e_' + e, `fx/e_${e}.png`]);
   for (const p of ['star_07', 'star_04', 'magic_02', 'circle_05', 'light_01', 'twirl_02', 'smoke_04', 'spark_05']) list.push(['k_' + p, `fx/k_${p}.png`]);
   for (const h of Object.keys(HEROES)) list.push(['h_' + h, `heroes/${h}.png`]);
   for (const b of BIOMES) {
@@ -356,8 +357,60 @@ function throwStar() {
   if (best) { const tx = best.x - hero.x, ty = (best.state ? best.y - AIM_DY : best.y) - hero.y, k = Math.hypot(tx, ty); ax = tx / k; ay = ty / k; }
   if (Math.abs(ax) > Math.abs(ay)) hero.dir = ax > 0 ? 3 : 2; else hero.dir = ay > 0 ? 0 : 1;
   const sp = T * 15;
-  stars.push({ x: hero.x + ax * 20, y: hero.y - 10 + ay * 20, vx: ax * sp, vy: ay * sp, t: 0, rot: 0, target: best, dead: false });
+  stars.push({ x: hero.x + ax * 20, y: hero.y - 10 + ay * 20, vx: ax * sp, vy: ay * sp, t: 0, rot: 0, target: best, dead: false, hist: [] });
+  elemThrow(hero.x + ax * 26, hero.y - 10 + ay * 26, ax, ay);
 }
+// --- the ninjas' elements: each one's shurikens look, trail and hit differently ---------
+// sprite sheets from the Ninja Adventure pack (CC0): frames of fw x fh in one row
+const SHEET = { flam: [25, 30, 8], fire: [12, 12, 8], water: [40, 33, 11], thunder: [20, 28, 8], ice: [32, 32, 9], flake: [32, 32, 9], snow: [8, 8, 7] };
+function sheet(key, x, y, o = {}) {
+  const [fw, fh, n] = SHEET[key], fps = o.fps ?? 16;
+  parts.push({ kind: 'sheet', key, fw, fh, n, fps, f0: o.f0 || 0, x, y, vx: o.vx || 0, vy: o.vy || 0, g: o.g || 0, drag: o.drag || 0, rot: o.rot || 0, vr: o.vr || 0,
+    sc: o.sc || SC, t: 0, life: o.life ?? (n - (o.f0 || 0)) / fps, fade: !!o.fade, add: !!o.add });
+}
+const EL = () => HEROES[heroKey].el;
+function elemThrow(x, y, ax, ay) {
+  const e = EL();
+  if (e === 'fire') { sheet('flam', x, y - 6, { sc: 2, fps: 22 }); for (let k = 0; k < 5; k++) parts.push({ kind: 'dot', x, y, vx: ax * 120 + rnd(-90, 90), vy: ay * 120 + rnd(-140, -30), t: 0, life: 0.45, color: k % 2 ? '#ffd23c' : '#ff6a1f', g: 250 }); }
+  else if (e === 'water') { for (let k = 0; k < 7; k++) parts.push({ kind: 'drop', x, y, vx: ax * 90 + rnd(-110, 110), vy: ay * 90 + rnd(-170, -40), t: 0, life: 0.6, r: rnd(2.5, 5), g: 520 }); }
+  else if (e === 'thunder') { parts.push({ kind: 'ring', key: 'k_circle_05', color: '#fff38a', x, y, t: 0, life: 0.3, size: 26, add: true }); sheet('thunder', x, y - 8, { sc: 1.8, fps: 26 }); }
+  else { sheet('flake', x, y, { sc: 1.6, fps: 24 }); }
+}
+function elemTrail(s, dt) {
+  const e = EL(), c = HEROES[heroKey].color;
+  s.hist.push([s.x, s.y]); if (s.hist.length > 7) s.hist.shift();
+  if (Math.random() < 0.5) parts.push({ kind: 'kp', key: 'k_light_01', color: c, x: s.x, y: s.y, vx: 0, vy: 0, t: 0, life: 0.3, size: 30, add: true });
+  if (e === 'fire') {                                       // flames licking up behind it, embers
+    if (Math.random() < 0.8) sheet('fire', s.x + rnd(-6, 6), s.y + rnd(-6, 6), { vx: rnd(-15, 15), vy: rnd(-80, -40), sc: rnd(2.6, 3.8), fps: 16 });
+    if (Math.random() < 0.3) parts.push({ kind: 'dot', x: s.x, y: s.y, vx: rnd(-40, 40), vy: rnd(-90, -30), t: 0, life: 0.5, color: '#ffb02e', g: -60 });
+  } else if (e === 'water') {                               // bubbles and drops
+    if (Math.random() < 0.6) parts.push({ kind: 'bubble', x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), vx: rnd(-10, 10), vy: rnd(-40, -15), t: 0, life: rnd(0.5, 0.9), r: rnd(3, 7), ph: rnd(0, 6) });
+    if (Math.random() < 0.4) parts.push({ kind: 'drop', x: s.x, y: s.y, vx: s.vx * 0.05 + rnd(-30, 30), vy: rnd(-60, 0), t: 0, life: 0.5, r: rnd(2, 3.5), g: 600 });
+  } else if (e === 'thunder') {                             // crackling sparks (the zigzag is drawn with the star)
+    if (Math.random() < 0.5) parts.push({ kind: 'kp', key: 'k_spark_05', color: '#fff6a0', x: s.x + rnd(-10, 10), y: s.y + rnd(-10, 10), vx: rnd(-60, 60), vy: rnd(-60, 60), t: 0, life: 0.18, size: rnd(18, 30), rot: rnd(0, 6), add: true });
+  } else {                                                  // snowflakes drifting down
+    if (Math.random() < 0.7) parts.push({ kind: 'flake', x: s.x + rnd(-10, 10), y: s.y + rnd(-10, 10), vx: rnd(-20, 20), vy: rnd(10, 40), t: 0, life: rnd(0.6, 1.1), r: rnd(4, 7), rot: rnd(0, 1), vr: rnd(-3, 3) });
+  }
+}
+function elemHit(x, y, big = 1) {
+  const e = EL(); big *= 1.35;
+  if (e === 'fire') { sheet('flam', x, y - 12 * big, { sc: SC * 1.1 * big, fps: 16 }); for (let k = 0; k < 10 * big; k++) parts.push({ kind: 'dot', x, y, vx: rnd(-160, 160), vy: rnd(-220, -40), t: 0, life: 0.6, color: k % 3 ? '#ff7a1f' : '#ffe14a', g: 380 }); }
+  else if (e === 'water') { sheet('water', x, y - 14 * big, { f0: 2, sc: SC * 0.75 * big, fps: 18 }); for (let k = 0; k < 12 * big; k++) parts.push({ kind: 'drop', x, y, vx: rnd(-170, 170), vy: rnd(-260, -60), t: 0, life: 0.7, r: rnd(2.5, 5), g: 650 }); }
+  else if (e === 'thunder') {
+    sheet('thunder', x, y - 26 * big, { sc: SC * 1.2 * big, fps: 20 });
+    parts.push({ kind: 'ring', key: 'k_circle_05', color: '#fff38a', x, y, t: 0, life: 0.35, size: 40 * big, add: true });
+    parts.push({ kind: 'bolts', x, y, t: 0, life: 0.28, r: T * 1.3 * big, n: 5 + Math.floor(rnd(0, 3)) });
+  } else { sheet('ice', x, y - 12 * big, { sc: SC * 0.8 * big, fps: 16 }); sheet('flake', x, y, { sc: SC * 0.9 * big, fps: 18 }); }
+}
+// lightning between the last points of a thunder shuriken, new every frame
+function zigzag(pts, ox, oy, spread) {
+  g.beginPath(); g.moveTo(pts[0][0] - ox, pts[0][1] - oy);
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], mx = (x0 + x1) / 2, my = (y0 + y1) / 2, dx = x1 - x0, dy = y1 - y0, k = Math.hypot(dx, dy) || 1, j = rnd(-spread, spread);
+    g.lineTo(mx - dy / k * j - ox, my + dx / k * j - oy); g.lineTo(x1 - ox, y1 - oy);
+  }
+}
+
 // a storyteller hit by a shuriken hops, says "Ouch! Don't do that!" (in its own voice) and forgives at once
 let lastOuch = -1;
 function ouch(n) {
@@ -379,22 +432,22 @@ function updateStars(dt) {
       const k = Math.min(1, dt * 9); s.vx += (dx / d * sp - s.vx) * k; s.vy += (dy / d * sp - s.vy) * k;
     }
     s.x += s.vx * dt; s.y += s.vy * dt;
-    if (Math.random() < 0.7) parts.push({ kind: 'kp', key: 'k_light_01', color: HEROES[heroKey].color, x: s.x, y: s.y, vx: 0, vy: 0, t: 0, life: 0.35, size: 34, add: true });
+    elemTrail(s, dt);
     // hits: arena creatures (their picture card or body), path monsters
     for (const cr of crit[qi] || []) {
       if (cr.state !== 'idle' || activeGate !== qi) continue;
       if (s.target && s.target.state && cr !== s.target) continue;           // an aimed star flies past the others
-      if (Math.hypot(s.x - cr.x, s.y - (cr.y - CARD_DY)) < T * 0.95 || Math.hypot(s.x - cr.x, s.y - cr.y) < T * 0.7) { s.dead = true; hit(cr, s); break; }
+      if (Math.hypot(s.x - cr.x, s.y - (cr.y - CARD_DY)) < T * 0.95 || Math.hypot(s.x - cr.x, s.y - cr.y) < T * 0.7) { s.dead = true; elemHit(s.x, s.y, 1.3); hit(cr, s); break; }
     }
     if (s.dead) continue;
     for (const m of mons) if (m.gone <= 0 && Math.hypot(s.x - m.x, s.y - m.y) < T * 0.7) {
-      s.dead = true; m.gone = 8; chased++; sfx('chase', 0.5); puff(m.x, m.y - 10, '#ffffff'); break;
+      s.dead = true; m.gone = 8; chased++; sfx('chase', 0.5); puff(m.x, m.y - 10, '#ffffff'); elemHit(s.x, s.y, 1.1); break;
     }
     if (s.dead) continue;
-    for (const n of npcs) if (Math.hypot(s.x - n.x, s.y - (n.y - 10)) < T * 0.75) { s.dead = true; ouch(n); break; }
+    for (const n of npcs) if (Math.hypot(s.x - n.x, s.y - (n.y - 10)) < T * 0.75) { s.dead = true; elemHit(s.x, s.y, 0.7); ouch(n); break; }
     if (s.dead) continue;
     const tx = Math.floor(s.x / T), ty = Math.floor(s.y / T);
-    if (s.t > 1.1 || solid(tx, ty)) { s.dead = true; for (let k = 0; k < 6; k++) parts.push({ kind: 'dot', x: s.x, y: s.y, vx: rnd(-80, 80), vy: rnd(-120, -20), t: 0, life: 0.4, color: '#dfe6ff', g: 400 }); }
+    if (s.t > 1.1 || solid(tx, ty)) { s.dead = true; elemHit(s.x, s.y, 0.75); for (let k = 0; k < 6; k++) parts.push({ kind: 'dot', x: s.x, y: s.y, vx: rnd(-80, 80), vy: rnd(-120, -20), t: 0, life: 0.4, color: '#dfe6ff', g: 400 }); }
   }
   stars = stars.filter(s => !s.dead);
 }
@@ -542,7 +595,7 @@ function updateParticles(dt) {
   }
   for (let i = parts.length - 1; i >= 0; i--) {
     const p = parts[i]; p.t += dt;
-    if (p.kind === 'dot') p.vy += p.g * dt;
+    if (p.kind === 'dot' || p.kind === 'drop' || p.kind === 'sheet') p.vy += (p.g || 0) * dt;
     else if (p.kind === 'firefly') { p.vx += rnd(-60, 60) * dt; p.vy += rnd(-60, 60) * dt; p.vx *= 0.97; p.vy *= 0.97; }
     else if (p.kind === 'leaf') p.x += Math.sin(p.t * 1.5 + p.ph) * 20 * dt;
     if (p.drag) { p.vx *= Math.max(0, 1 - p.drag * dt); p.vy *= Math.max(0, 1 - p.drag * dt); }
@@ -704,6 +757,24 @@ function render() {
   // poofs (smoke sprite), shurikens
   for (const p of poofs) if (IMG.smoke) { const f = Math.min(5, Math.floor(p.t / 0.1)); g.drawImage(IMG.smoke, f * 32, 0, 32, 32, p.x - ox - 48, p.y - oy - 48, 96, 96); }
   for (const s of stars) if (IMG.shuriken) {
+    const e = EL(), c = HEROES[heroKey].color;
+    g.globalCompositeOperation = 'lighter';
+    if (e !== 'thunder' && s.hist.length > 2) {
+      const pts = [...s.hist, [s.x, s.y]], wob = e === 'water' ? 1 : 0;
+      const ribbon = (w, col) => { g.beginPath(); pts.forEach(([px, py], i) => { const k = i / pts.length, wy = wob * Math.sin(clock * 30 + i * 1.3) * 5; i ? g.lineTo(px - ox, py - oy + wy) : g.moveTo(px - ox, py - oy + wy); }); g.strokeStyle = col; g.lineWidth = w; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(); };
+      g.globalCompositeOperation = 'source-over';
+      if (e === 'fire') { ribbon(14, 'rgba(230,60,20,0.55)'); ribbon(8, 'rgba(255,150,30,0.8)'); ribbon(3, 'rgba(255,240,150,0.95)'); }
+      else if (e === 'water') { ribbon(12, 'rgba(30,140,230,0.45)'); ribbon(6, 'rgba(90,200,255,0.75)'); ribbon(2, 'rgba(255,255,255,0.9)'); }
+      else { ribbon(12, 'rgba(120,190,255,0.35)'); ribbon(6, 'rgba(200,235,255,0.8)'); ribbon(2, 'rgba(255,255,255,1)'); }
+      g.lineCap = 'butt'; g.globalCompositeOperation = 'lighter';
+    }
+    if (e === 'thunder' && s.hist.length > 1) {
+      g.globalCompositeOperation = 'source-over'; for (const [w, col] of [[8, 'rgba(255,190,0,0.5)'], [4, 'rgba(255,225,60,0.95)'], [1.5, '#ffffff']]) { zigzag([...s.hist, [s.x, s.y]], ox, oy, 10); g.strokeStyle = col; g.lineWidth = w; g.stroke(); } g.globalCompositeOperation = 'lighter';
+    }
+    const gr = g.createRadialGradient(s.x - ox, s.y - oy, 2, s.x - ox, s.y - oy, 30);
+    gr.addColorStop(0, e === 'water' ? 'rgba(120,210,255,0.75)' : e === 'ice' ? 'rgba(220,240,255,0.8)' : e === 'thunder' ? 'rgba(255,245,140,0.8)' : 'rgba(255,140,40,0.85)');
+    gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(s.x - ox, s.y - oy, 30, 0, 7); g.fill();
+    g.globalCompositeOperation = 'source-over';
     g.save(); g.translate(s.x - ox, s.y - oy); g.rotate(s.rot); g.drawImage(IMG.shuriken, 0, 0, 16, 16, -16, -16, 32, 32); g.restore();
   }
   // particles
@@ -718,7 +789,31 @@ function render() {
       g.globalCompositeOperation = 'source-over';
     } else if (p.kind === 'leaf' && IMG.leaf) { g.globalAlpha = 0.95; g.drawImage(IMG.leaf, (Math.floor(p.t * 8) % 6) * 12, 0, 12, 7, x, y, 24, 14); }
     else if (p.kind === 'firefly') { const a = 0.5 + 0.5 * Math.sin(p.t * 4 + p.ph); g.globalAlpha = a; const gr = g.createRadialGradient(x, y, 0, x, y, 14); gr.addColorStop(0, 'rgba(255,255,170,0.95)'); gr.addColorStop(1, 'rgba(255,255,120,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, 14, 0, 7); g.fill(); }
-    else if (p.kind === 'mote') { g.globalAlpha = 0.45 + 0.35 * Math.sin(p.t * 3 + p.ph); g.fillStyle = p.c; g.fillRect(x, y, 3, 3); }
+    else if (p.kind === 'sheet') {
+      const img = IMG['e_' + p.key]; if (!img) continue;
+      const f = p.f0 + Math.min(p.n - 1 - p.f0, Math.floor(p.t * p.fps)), w = p.fw * p.sc, h = p.fh * p.sc;
+      g.globalAlpha = p.fade ? Math.max(0, 1 - p.t / p.life) : 1; if (p.add) g.globalCompositeOperation = 'lighter';
+      g.save(); g.translate(x, y); if (p.rot) g.rotate(p.rot); g.drawImage(img, f * p.fw, 0, p.fw, p.fh, -w / 2, -h / 2, w, h); g.restore();
+      g.globalCompositeOperation = 'source-over';
+    } else if (p.kind === 'drop') {
+      g.globalAlpha = Math.max(0, 1 - p.t / p.life); g.fillStyle = '#2fa8f0'; g.strokeStyle = '#0d5a9c'; g.lineWidth = 1.5; g.beginPath(); g.ellipse(x, y, p.r * 0.8, p.r * 1.15, Math.atan2(p.vy, p.vx) - Math.PI / 2, 0, 7); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,0.8)'; g.fillRect(x - p.r * 0.3, y - p.r * 0.5, Math.max(1, p.r * 0.4), Math.max(1, p.r * 0.4));
+    } else if (p.kind === 'bubble') {
+      g.globalAlpha = Math.max(0, 1 - p.t / p.life) * 0.9; g.strokeStyle = '#3aa6e8'; g.lineWidth = 2; g.beginPath(); g.arc(x + Math.sin(p.t * 9 + p.ph) * 3, y, p.r, 0, 7); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,0.7)'; g.fillRect(x + Math.sin(p.t * 9 + p.ph) * 3 - p.r * 0.45, y - p.r * 0.5, 2, 2);
+    } else if (p.kind === 'flake') {                       // a snowflake: six white arms with a blue edge
+      g.globalAlpha = Math.max(0, 1 - p.t / p.life); g.save(); g.translate(x, y); g.rotate(p.rot); g.lineCap = 'round';
+      for (const [w, col] of [[3.5, '#5aa8e6'], [1.6, '#ffffff']]) { g.beginPath(); for (let k = 0; k < 3; k++) { const a = k * Math.PI / 3; g.moveTo(Math.cos(a) * p.r, Math.sin(a) * p.r); g.lineTo(-Math.cos(a) * p.r, -Math.sin(a) * p.r); } g.strokeStyle = col; g.lineWidth = w; g.stroke(); }
+      g.restore(); g.lineCap = 'butt';
+    } else if (p.kind === 'bolts') {
+      g.globalAlpha = Math.max(0, 1 - p.t / p.life);
+      for (let i = 0; i < p.n; i++) {
+        const a = i / p.n * 6.28 + rnd(-0.3, 0.3), pts = [[p.x, p.y]];
+        for (let k = 1; k <= 3; k++) pts.push([p.x + Math.cos(a) * p.r * k / 3 + rnd(-6, 6), p.y + Math.sin(a) * p.r * k / 3 + rnd(-6, 6)]);
+        for (const [w, col] of [[6, 'rgba(255,190,0,0.55)'], [3, 'rgba(255,230,70,1)'], [1.2, '#ffffff']]) { zigzag(pts, ox, oy, 6); g.strokeStyle = col; g.lineWidth = w; g.stroke(); }
+      }
+      g.globalCompositeOperation = 'source-over';
+    } else if (p.kind === 'mote') { g.globalAlpha = 0.45 + 0.35 * Math.sin(p.t * 3 + p.ph); g.fillStyle = p.c; g.fillRect(x, y, 3, 3); }
     g.globalAlpha = 1;
   }
   g.strokeStyle = 'rgba(30,30,45,0.85)'; g.lineWidth = 2.5;
@@ -893,4 +988,5 @@ window.__ln = {
   map: () => ({ rivers: world.rivers, gems: world.gems.map(o => [o.x, o.y]), npcs: world.npcs, gates: world.gates.map(o => o.plaza), W: world.W, start: world.start, biomeX: world.biomeX }),
   mons: () => mons.map(m => ({ x: m.x / T, y: m.y / T, gone: m.gone, a: m.a, b: m.b })),
   walk: (x, y) => walkable(x, y),
+  boom: (big = 1.3) => elemHit(hero.x + T * 2.5, hero.y - 10, big),
 };
