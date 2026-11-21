@@ -50,7 +50,7 @@ python3 -m http.server 8000
 - **Dungeon, night village, sparks and stars**: [Kenney](https://kenney.nl)
   (Tiny Dungeon, Tiny Town, Particle Pack), CC0 1.0.
 - **Word and fact pictures** in `img/`: [Twemoji](https://github.com/jdecked/twemoji)
-  (© Twitter, Inc. and other contributors), CC-BY 4.0; `hex.svg` is our own.
+  (© Twitter, Inc. and other contributors), CC-BY 4.0; `hex.svg` and `sheep.svg` are our own.
 - **Voice clips** in `audio/`: generated with Microsoft Edge text-to-speech
   (neural voices Sonia, Ava, Andrew; Polish words: Zofia). They are not covered
   by the AGPL or a Creative Commons license.
