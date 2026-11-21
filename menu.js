@@ -1,7 +1,7 @@
 // Menu of English Ninja: which ninja, which words, then the journey.
-import { initGame, startGame, stopGame, HEROES } from './game.js?v=131';
-import { loadVocab, cats, catById, MIX_CATS, knownCount } from './words.js?v=131';
-import { crystalImage, crystalColour, keepCrystal } from './treasure.js?v=131';
+import { initGame, startGame, stopGame, HEROES } from './game.js?v=132';
+import { loadVocab, cats, catById, MIX_CATS, knownCount } from './words.js?v=132';
+import { crystalImage, crystalColour, keepCrystal } from './treasure.js?v=132';
 
 const $ = (id) => document.getElementById(id);
 const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem('english_' + k)); return v ?? d; } catch (_) { return d; } };

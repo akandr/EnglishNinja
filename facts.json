@@ -728,5 +728,31 @@
    "voice": "f",
    "lvl": 1
   }
+ ],
+ "ouch": [
+  {
+   "id": "ouch1",
+   "text": "Ouch! Don't do that!"
+  },
+  {
+   "id": "ouch2",
+   "text": "Hey! That hurts!"
+  },
+  {
+   "id": "ouch3",
+   "text": "Ow! I'm your friend!"
+  },
+  {
+   "id": "ouch4",
+   "text": "Oops! Not me, ninja!"
+  },
+  {
+   "id": "ouch5",
+   "text": "Ouch! Find the creatures, not me!"
+  },
+  {
+   "id": "ouch6",
+   "text": "Hey! I'm on your side!"
+  }
  ]
 }

@@ -4,13 +4,13 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=131';
+import { loadAudioBuffer } from './audio.js?v=132';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=131';
-import * as W from './words.js?v=131';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=131';
-import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=131';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=132';
+import * as W from './words.js?v=132';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=132';
+import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=132';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -150,7 +150,7 @@ export async function startGame(c) {
   ctx();
   text.textContent = 'Loading voices and music…'; fill.style.width = '0%';
   const AU = new URL('./audio/', import.meta.url).href, SFX = new URL('./assets/sfx/', import.meta.url).href, MU = new URL('./assets/music/', import.meta.url).href;
-  if (!facts.length) facts = (await (await fetch(new URL('./facts.json?v=' + AUDIO_VER, import.meta.url))).json());
+  if (!facts.length) facts = (await (await fetch(new URL('./facts.json?v=' + AUDIO_VER, import.meta.url), { cache: 'no-cache' })).json());
   await loadFactPics();
   await W.loadVocab();
   qs = W.pickRound(c.cat, 10).map(id => ({ id, options: [id, ...W.distractors(id, 3)].sort(() => Math.random() - 0.5), variant: Math.random() < 0.6 ? 1 : 2 }));
@@ -184,7 +184,7 @@ export async function startGame(c) {
     return { x: (p.x + 0.5) * T, y: (p.y + 0.5) * T, fact: f, who: list[i % list.length], armed: true, awayT: 0, spoken: false, bob: Math.random() * 6 };
   });
   text.textContent = 'Inviting the storytellers…'; fill.style.width = '85%';
-  await Promise.all(npcs.map(n => loadClip('npc_' + n.fact.id, AU)));
+  await Promise.all([...npcs.map(n => loadClip('npc_' + n.fact.id, AU)), ...(facts.ouch || []).flatMap(o => ['f', 'm'].map(v => loadClip(`npc_${o.id}_${v}`, AU)))]);
   await Promise.all(BIOMES.map(async b => {
     if (music.has(b.music)) return;
     const r = await loadAudioBuffer(ctx(), MU + b.music, AUDIO_VER); if (r.buffer) music.set(b.music, r.buffer);
@@ -291,6 +291,7 @@ function update(dt) {
   updateStars(dt);
   // storytellers
   for (const n of npcs) {
+    if (n.hurtT > 0) n.hurtT -= dt;
     const d = Math.hypot(hero.x - n.x, hero.y - n.y);
     if (d > T * 6) { n.awayT += dt; if (n.awayT > 3) n.armed = true; } else if (!n.armed) n.awayT = 0;
     if (n.armed && d < T * 2.4 && voiceFree() && finishT < 0) {
@@ -357,6 +358,17 @@ function throwStar() {
   const sp = T * 15;
   stars.push({ x: hero.x + ax * 20, y: hero.y - 10 + ay * 20, vx: ax * sp, vy: ay * sp, t: 0, rot: 0, target: best, dead: false });
 }
+// a storyteller hit by a shuriken hops, says "Ouch! Don't do that!" (in its own voice) and forgives at once
+let lastOuch = -1;
+function ouch(n) {
+  n.hurtT = 0.9; sfx('boing', 0.45); sparkle(n.x, n.y - 24, '#ffffff', 6);   // no smoke: it is not chased away
+  if ((n.ouchT || 0) > clock) return;
+  n.ouchT = clock + 1.6;
+  const L = facts.ouch || []; if (!L.length) return;
+  let k = Math.floor(Math.random() * L.length); if (L.length > 1 && k === lastOuch) k = (k + 1) % L.length;
+  lastOuch = k; n.ouchWord = L[k].text.split(' ')[0];
+  if (voiceFree()) enqueue({ clips: [`npc_${L[k].id}_${n.fact.voice === 'f' ? 'f' : 'm'}`], gap: 300, low: true, onStart: (ms) => caption(nameOf(n.who), L[k].text, ms) });
+}
 function updateStars(dt) {
   for (const s of stars) {
     if (s.dead) continue;
@@ -378,6 +390,8 @@ function updateStars(dt) {
     for (const m of mons) if (m.gone <= 0 && Math.hypot(s.x - m.x, s.y - m.y) < T * 0.7) {
       s.dead = true; m.gone = 8; chased++; sfx('chase', 0.5); puff(m.x, m.y - 10, '#ffffff'); break;
     }
+    if (s.dead) continue;
+    for (const n of npcs) if (Math.hypot(s.x - n.x, s.y - (n.y - 10)) < T * 0.75) { s.dead = true; ouch(n); break; }
     if (s.dead) continue;
     const tx = Math.floor(s.x / T), ty = Math.floor(s.y / T);
     if (s.t > 1.1 || solid(tx, ty)) { s.dead = true; for (let k = 0; k < 6; k++) parts.push({ kind: 'dot', x: s.x, y: s.y, vx: rnd(-80, 80), vy: rnd(-120, -20), t: 0, life: 0.4, color: '#dfe6ff', g: 400 }); }
@@ -682,7 +696,7 @@ function render() {
   // sprites sorted by y
   const sprites = [];
   for (const m of mons) if (m.gone <= 0) sprites.push({ y: m.y, draw: () => drawSheet(IMG['m_' + m.kind], m.x - ox, m.y - oy, m.dir, Math.floor(m.anim || 0) % 4, 1.15) });
-  for (const n of npcs) sprites.push({ y: n.y, draw: () => drawChar(IMG['p_' + n.who], n.x - ox, n.y - oy, 0, 0, n) });
+  for (const n of npcs) { const h = Math.max(0, n.hurtT || 0), k = 1 - h / 0.9; sprites.push({ y: n.y, draw: () => drawChar(IMG['p_' + n.who], n.x - ox + (h ? Math.sin(clock * 50) * 3 * h : 0), n.y - oy - (h ? Math.sin(k * Math.PI) * 16 : 0), 0, 0, n) }); }
   for (const a of animals) sprites.push({ y: a.y, draw: () => drawAnimal(a, a.x - ox, a.y - oy) });
   for (const list of crit) for (const cr of list) if (cr.state !== 'gone' && inView(cr.x - ox, cr.y - oy, T * 3)) sprites.push({ y: cr.y, draw: () => drawCreature(cr, cr.x - ox, cr.y - oy) });
   if (invuln <= 0 || Math.floor(clock * 10) % 2) sprites.push({ y: hero.y, draw: () => drawChar(IMG['h_' + heroKey], hero.x - ox, hero.y - oy, hero.dir, hero.throwT > 0 ? 4 : hero.moving ? Math.floor(hero.frame) % 4 : 0) });
@@ -845,6 +859,14 @@ function drawChar(img, x, y, dir, frame, npc) {
   g.drawImage(img, dir * 16, frame * 16, 16, 16, x - w / 2, y - h * 0.6, w, h);
   if (npc) {
     const by = y - h * 0.8 + Math.sin(clock * 3 + npc.bob) * 3;
+    if (npc.hurtT > 0 && npc.ouchWord) {
+      const wd = npc.ouchWord, sc = 1 + 0.3 * Math.max(0, npc.hurtT - 0.6) / 0.3;
+      g.save(); g.translate(x, by - 16); g.scale(sc, sc); g.rotate(-0.08);
+      g.font = '900 18px system-ui, sans-serif'; const tw = g.measureText(wd).width + 18;
+      g.fillStyle = '#fff'; g.strokeStyle = '#e8343c'; g.lineWidth = 3; g.beginPath(); g.roundRect(-tw / 2, -14, tw, 28, 10); g.fill(); g.stroke();
+      g.fillStyle = '#e8343c'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(wd, 0, 1);
+      g.restore(); return;
+    }
     g.globalAlpha = npc.spoken ? 0.45 : 1;
     g.fillStyle = '#fff'; g.strokeStyle = '#2a1f4a'; g.lineWidth = 3;
     g.beginPath(); g.roundRect(x - 20, by - 26, 40, 24, 8); g.fill(); g.stroke();
@@ -865,7 +887,7 @@ window.__ln = {
   get: () => ({ running, qi, activeGate, hero: hero && { x: hero.x / T, y: hero.y / T, tx: hero.tx, ty: hero.ty }, land: landShown,
     crit: crit[qi] ? crit[qi].map(c => ({ x: c.x / T, y: c.y / T, val: c.val, correct: c.correct, state: c.state })) : [],
     q: qs && qs[qi] ? qs[qi].id : null, gate: world && world.gates[qi] ? world.gates[qi].plaza : null, chest: world && world.chest, finishT,
-    vf: voiceFree(), ql: queue.length, timer: !!qTimer, until: Math.round(speakingUntil - performance.now()), done: !!finish.done, mistakes, chased, stars: stars.length }),
+    vf: voiceFree(), ql: queue.length, timer: !!qTimer, until: Math.round(speakingUntil - performance.now()), done: !!finish.done, mistakes, chased, stars: stars.length, starPos: stars.filter(o => !o.dead).map(o => [o.x / T, o.y / T]), hurt: npcs.map(n => n.hurtT || 0), ouchN: (facts.ouch || []).length }),
   tp: (x, y) => { hero.tx = hero.fx = x; hero.ty = hero.fy = y; hero.moveT = 1; hero.x = (x + 0.5) * T; hero.y = (y + 0.5) * T; },
   aim: (x, y) => { const dx = x * T - hero.x, dy = y * T - hero.y, k = Math.hypot(dx, dy); hero.aim = { x: dx / k, y: dy / k }; throwStar(); },
   map: () => ({ rivers: world.rivers, gems: world.gems.map(o => [o.x, o.y]), npcs: world.npcs, gates: world.gates.map(o => o.plaza), W: world.W, start: world.start, biomeX: world.biomeX }),
