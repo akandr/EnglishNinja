@@ -8,6 +8,16 @@ The creatures hold pictures; a voice says in English what to find, and you hit
 the right one with your shuriken. Storytellers on the way tell very simple facts
 (with pictures), and a crystal waits in the treasure chest at the end.
 
+![The Fire Ninja throws a flaming shuriken at the creature holding orange](docs/play.webp)
+
+<p>
+  <img src="docs/fact.webp" width="49%" alt="A storyteller in the desert: bees make honey">
+  <img src="docs/crystal.webp" width="49%" alt="A red crystal rises from the treasure chest">
+  <img src="docs/dungeon.webp" width="49%" alt="The Dungeon">
+  <img src="docs/sky.webp" width="49%" alt="Sky Islands">
+  <img src="docs/menu.webp" width="49%" alt="Menu: four elemental ninjas and eleven categories">
+</p>
+
 Categories: colours, shapes, numbers, farm animals, food, toys and things, wild
 animals, nature and space, my body, colours and shapes, counting.
 
