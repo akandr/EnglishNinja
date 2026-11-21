@@ -1,0 +1,64 @@
+English Ninja
+Copyright (C) 2026 Artur Andrzejczak  <https://akandr.cc>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+The full text of the GNU AGPL v3 is included in this repository at
+`LICENSES/AGPL-3.0.txt`.
+
+Note: because this is a network-served (web) application, AGPL section 13
+applies — anyone who runs a modified copy of this game on a publicly
+accessible server must offer the corresponding source code to its users.
+
+Development assisted by Claude (Anthropic).
+
+================================================================================
+Third-party assets — different licenses
+================================================================================
+
+The AGPL applies to the game *code* (the .js, .html and .css files and the
+JSON data). The assets below are licensed separately.
+
+--------------------------------------------------------------------------------
+Sprites, tilesets, music, sound and elemental effects (assets/)
+--------------------------------------------------------------------------------
+
+  Pack:    Ninja Adventure Asset Pack
+  Authors: Pixel-boy  (https://pixel-boy.itch.io/)
+           AAA        (https://www.instagram.com/challenger.aaa/)
+  Pack page: https://pixel-boy.itch.io/ninja-adventure-asset-pack
+  License: Creative Commons Zero (CC0 1.0 Universal) — public domain
+
+  Packs:   Tiny Dungeon, Tiny Town, Particle Pack
+  Author:  Kenney (https://kenney.nl)
+  License: Creative Commons Zero (CC0 1.0 Universal) — public domain
+
+--------------------------------------------------------------------------------
+Pictures (img/)
+--------------------------------------------------------------------------------
+
+  Graphics: Twemoji — https://github.com/jdecked/twemoji
+  Copyright: Twitter, Inc. and other contributors
+  License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+           https://creativecommons.org/licenses/by/4.0/
+  (img/hex.svg is our own drawing, under the same terms as the code.)
+
+--------------------------------------------------------------------------------
+Voice clips (audio/)
+--------------------------------------------------------------------------------
+
+The English sentences, the facts and the Polish translations were generated
+with the Microsoft Edge text-to-speech service (neural voices Sonia, Ava and
+Andrew; Polish: Zofia). They are not covered by the AGPL or by any Creative
+Commons license; Microsoft's terms for that service apply to them.
