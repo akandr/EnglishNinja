@@ -49,8 +49,9 @@ h2 { font-size: 18px; margin: 14px 0 6px; color: #ffd9f2; text-transform: upperc
 .card { background: #24134f; border: 3px solid var(--acc); border-radius: 20px; padding: 22px 30px; text-align: center; display: flex; flex-direction: column; gap: 10px; min-width: 300px; max-width: 92vw; max-height: 92vh; overflow-y: auto; }
 .card b { font-size: 30px; color: var(--acc); }
 .track { height: 14px; background: rgba(255,255,255,.15); border-radius: 8px; overflow: hidden; } #loading-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--acc2), var(--acc)); transition: width .2s; }
-.win h2 { margin: 0; font-size: 34px; color: #ffdf5e; } .win .emoji { font-size: 56px; } .stars { font-size: 44px; color: #ffdf5e; }
-#win-stats { list-style: none; padding: 0; margin: 0; font-size: 18px; } #win-facts { text-align: left; font-size: 15px; } #win-facts summary { cursor: pointer; color: var(--acc); }
+.win h2 { margin: 0; font-size: 34px; color: #ffdf5e; } .win .emoji { font-size: 56px; } .stars { font-size: 40px; line-height: 1; color: #ffdf5e; }
+.win { gap: 6px; }
+#win-stats { list-style: none; padding: 0; margin: 0; font-size: 18px; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 22px; max-width: 560px; align-self: center; } #win-facts { text-align: left; font-size: 15px; } #win-facts summary { cursor: pointer; color: var(--acc); }
 .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 #gem-box { margin-top: 8px; display: flex; gap: 6px; background: var(--panel); border: 2px solid rgba(143,227,255,.7); border-radius: 14px; padding: 3px 10px; }
 #gem-box .gc { display: flex; align-items: center; gap: 4px; font: 900 clamp(20px, 3.4vw, 30px) "Trebuchet MS", system-ui, sans-serif; }
@@ -76,3 +77,15 @@ h2 { font-size: 18px; margin: 14px 0 6px; color: #ffd9f2; text-transform: upperc
 #npc-pics .fp-num { font: 900 clamp(32px, 5vw, 52px) system-ui, sans-serif; color: #ff7a45; -webkit-text-stroke: 2px #1a1a2e; }
 #npc-text .kw { display: inline; margin: 0; color: var(--acc2); }
 @keyframes picIn { from { opacity: 0; transform: scale(.3) translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* the crystal from the chest on the win screen */
+#win-crystal { display: flex; flex-direction: column; align-items: center; margin: 4px 0 2px; }
+#win-crystal p { margin: 2px 0; }
+.crystal-big { width: 132px; height: 132px; animation: crystalIn .9s cubic-bezier(.2,1.6,.4,1) both, crystalBob 2.4s ease-in-out .9s infinite; filter: drop-shadow(0 0 18px rgba(255,255,255,.35)); }
+.crystal-name { font-size: 24px; font-weight: 800; }
+.crystal-name b { -webkit-text-stroke: 1px #1a1030; }
+.crystal-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0; max-width: 560px; }
+.crystal-row img { width: 32px; height: 32px; }
+.crystal-row img.new { width: 42px; height: 42px; animation: crystalBob 1.6s ease-in-out infinite; }
+@keyframes crystalIn { from { transform: scale(.2) rotate(-20deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes crystalBob { 50% { transform: translateY(-6px); } }

@@ -4,12 +4,13 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=130';
+import { loadAudioBuffer } from './audio.js?v=131';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=130';
-import * as W from './words.js?v=130';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=130';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=131';
+import * as W from './words.js?v=131';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=131';
+import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=131';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -109,6 +110,7 @@ let mons = [], magnetLeft = 0, invuln = 0, trail = [], chased = 0, hits = 0, thr
 let birds = [], fish = [], birdT = 6, stars = [], flyCards = [], poofs = [];
 const GEMS = [{ h: 350, l: 58 }, { h: 42, l: 58 }, { h: 140, l: 48 }, { h: 205, l: 55 }, { h: 280, l: 60 }];
 let gemCounts = [0, 0, 0, 0, 0];
+let treasure = null;   // { cr, t }: the crystal in the chest, t < 0 until it is opened
 let chunks = new Map(), npcs = [], animals = [], parts = [], crit = [], facts = [], heard = [], pics = new Map(), litDecor = [];
 const keys = {}, stick = { x: 0, y: 0, active: false, id: null, ox: 0, oy: 0, t0: 0, moved: 0 };
 
@@ -153,7 +155,8 @@ export async function startGame(c) {
   await W.loadVocab();
   qs = W.pickRound(c.cat, 10).map(id => ({ id, options: [id, ...W.distractors(id, 3)].sort(() => Math.random() - 0.5), variant: Math.random() < 0.6 ? 1 : 2 }));
   const all = [...new Set(qs.flatMap(q => q.options))];
-  const names = [...W.COMMON_CLIPS, ...W.roundClips(qs)];
+  treasure = { cr: makeCrystal(), t: -1, said: false, popped: false };
+  const names = [...W.COMMON_CLIPS, ...W.roundClips(qs), `w_${treasure.cr.w}_t`];
   const SFXN = ['bonus2', 'coin', 'impact', 'levelup1', 'power_freeze', 'power_end', 'throw', 'boing', 'poof', 'open', 'chase'];
   let done = 0; const total = names.length + SFXN.length;
   const tick = () => { fill.style.width = Math.round(++done / total * 70) + '%'; };
@@ -311,10 +314,19 @@ function update(dt) {
   }
   // the end: treasure
   if (finishT < 0 && qi >= qs.length && Math.hypot(hero.x - (world.chest.x + 0.5) * T, hero.y - (world.chest.y + 0.5) * T) < T * 1.5) {
-    finishT = 0; sfx('levelup1', 0.6);
+    finishT = 0; treasure.t = 0; sfx('levelup1', 0.6); sfx('open', 0.5);
     for (let k = 0; k < 5; k++) setTimeout(() => sparkle((world.chest.x + 0.5) * T + rnd(-60, 60), world.chest.y * T + rnd(-60, 30), `hsl(${rnd(0, 360)},90%,70%)`, 22, true), k * 220);
   }
-  if (finishT >= 0) { finishT += dt; if (finishT > 3 && voiceFree() && !finish.done) { finish.done = true; setTimeout(finish, 600); } }
+  if (finishT >= 0) { finishT += dt; if (finishT > 6.4 && voiceFree() && !finish.done) { finish.done = true; setTimeout(finish, 600); } }
+  if (treasure && treasure.t >= 0) {
+    treasure.t += dt;
+    const cx = (world.chest.x + 0.5) * T, cy = (world.chest.y + 0.5) * T, col = crystalColour(treasure.cr);
+    if (!treasure.popped && treasure.t > 1.05) {                          // out it pops
+      treasure.popped = true; sfx('bonus2', 0.6); sfx('coin', 0.5);
+      for (let k = 0; k < 4; k++) setTimeout(() => sparkle(cx + rnd(-50, 50), cy - T * 2.2 + rnd(-50, 40), treasure.cr.w === 'white' ? `hsl(${rnd(0, 360)},90%,75%)` : col, 18, k === 0), k * 140);
+    }
+    if (!treasure.said && treasure.t > 1.6) { treasure.said = true; queue.length = 0; enqueue({ clips: [`w_${treasure.cr.w}_t`], gap: 400 }); }   // old leftovers give way to the treasure
+  }
   updateMonsters(dt);
   updateLife(dt);
   updateParticles(dt);
@@ -434,7 +446,7 @@ function finish() {
   clearTimeout(caption.t); el('npc-bubble').classList.add('hidden');
   if (musicSrc) { try { musicSrc.stop(); } catch (_) {} musicSrc = null; }
   const st = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-  onEnd && onEnd({ stars: st, mistakes, firstTry, total: qs.length, heard, gems: gemsTaken, gemsTotal: world.gems.length, monsters: mons.length, chased, thrown });
+  onEnd && onEnd({ crystal: treasure && treasure.cr, stars: st, mistakes, firstTry, total: qs.length, heard, gems: gemsTaken, gemsTotal: world.gems.length, monsters: mons.length, chased, thrown });
 }
 
 // --- path monsters and the magnet ----------------------------------------------------------
@@ -738,7 +750,35 @@ function render() {
     g.fillStyle = blink ? '#ffffff' : '#ff6b6b'; g.beginPath(); g.roundRect(bx, by + 2, bw * magnetLeft / MAGNET_S, 16, 8); g.fill();
     drawMagnet(bx - 28, by + 10, 0.6);
   }
-  if (finishT >= 0) { g.fillStyle = `rgba(255,255,255,${Math.min(0.8, Math.max(0, finishT - 2.5) / 1.5)})`; g.fillRect(0, 0, vw, vh); }
+  if (treasure && treasure.t >= 0) drawTreasure(vw, vh, (world.chest.x + 0.5) * T - ox, (world.chest.y + 0.5) * T - oy);
+  if (finishT >= 0) { g.fillStyle = `rgba(255,255,255,${Math.min(0.8, Math.max(0, finishT - 5.6) / 1.4)})`; g.fillRect(0, 0, vw, vh); }
+}
+
+// The crystal out of the chest: the world dims, a beam shoots up, the crystal rises
+// with a little bounce, shines and turns its rays; its colour word appears above it.
+function drawTreasure(vw, vh, x, y) {
+  const t = treasure.t, cr = treasure.cr;
+  const dim = Math.min(1, Math.max(0, (t - 0.3) / 0.8));
+  if (dim > 0) { const gr = g.createRadialGradient(x, y - T * 2.5, T * 2.5, x, y - T * 2.5, Math.max(vw, vh) * 0.6); gr.addColorStop(0, 'rgba(8,6,30,0)'); gr.addColorStop(1, `rgba(8,6,30,${0.6 * dim})`); g.fillStyle = gr; g.fillRect(0, 0, vw, vh); }
+  if (t < 2.2) {                                                         // the beam of light
+    const a = Math.min(1, t / 0.25) * Math.max(0, 1 - Math.max(0, t - 1.1) / 1.1), bw = T * (0.6 + Math.min(1, t * 2) * 0.9);
+    const gr = g.createLinearGradient(x - bw, 0, x + bw, 0);
+    gr.addColorStop(0, 'rgba(255,250,220,0)'); gr.addColorStop(0.5, `rgba(255,250,220,${0.85 * a})`); gr.addColorStop(1, 'rgba(255,250,220,0)');
+    g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.fillRect(x - bw, 0, bw * 2, y - T * 0.3); g.globalCompositeOperation = 'source-over';
+  }
+  const k = Math.min(1, Math.max(0, (t - 0.35) / 0.9));
+  if (k <= 0) return;
+  const c1 = 1.70158, e = 1 + (c1 + 1) * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2);   // ease out with a little overshoot
+  const size = T * 3.3 * Math.max(0.05, e), base = y - T * 0.3 - T * 1.3 * e + Math.sin(t * 2.2) * 5 * k;
+  drawCrystal(g, cr, x, base, size, t, Math.min(1, k * 1.3));
+  if (t > 1.5) {                                                         // the colour word
+    const p = Math.min(1, (t - 1.5) / 0.35), sc = 1 + 0.25 * Math.sin(p * Math.PI);
+    g.save(); g.translate(x, base - size * 1.25); g.scale(sc, sc); g.globalAlpha = p;
+    g.font = `900 ${Math.round(T * 0.95)}px system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineJoin = 'round'; g.lineWidth = 8; g.strokeStyle = '#1a1030'; g.strokeText(cr.w, 0, 0);
+    g.fillStyle = cr.w === 'white' ? '#ffffff' : crystalColour(cr); g.fillText(cr.w, 0, 0);
+    g.restore();
+  }
 }
 
 // a picture card: rounded, framed, the word's picture (or a question mark before the question)
