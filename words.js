@@ -84,7 +84,10 @@ function shapePath(g, shape, cx, cy, r) {
     }
     case 'rectangle': g.rect(cx - r * 1.15, cy - r * 0.6, r * 2.3, r * 1.2); break;
     case 'oval': g.ellipse(cx, cy, r * 1.15, r * 0.7, 0, 0, Math.PI * 2); break;
-    case 'diamond': poly(4, -Math.PI / 2, r * 0.75, r * 1.1); break;
+    case 'rhombus': poly(4, -Math.PI / 2, r * 0.75, r * 1.1); break;
+    case 'diamond':                                    // a cut gem: flat top, crown, pointed pavilion
+      g.moveTo(cx - r * 0.55, cy - r * 0.62); g.lineTo(cx + r * 0.55, cy - r * 0.62); g.lineTo(cx + r * 1.05, cy - r * 0.12);
+      g.lineTo(cx, cy + r * 0.98); g.lineTo(cx - r * 1.05, cy - r * 0.12); g.closePath(); break;
     case 'hexagon': poly(6, 0); break;
     case 'arrow': {
       const w = r * 1.15, t = r * 0.38;
@@ -96,6 +99,18 @@ function shapePath(g, shape, cx, cy, r) {
 function fillShape(g, shape, cx, cy, r, color) {
   g.save(); shapePath(g, shape, cx, cy, r);
   g.fillStyle = color; g.fill();
+  if (shape === 'diamond') {                         // facets, lighter and darker, so it reads as a gem
+    const top = cy - r * 0.62, gird = cy - r * 0.12, tip = cy + r * 0.98, f = (pts, c) => { g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(cx + x * r, y) : g.moveTo(cx + x * r, y)); g.closePath(); g.fillStyle = c; g.fill(); };
+    f([[-0.55, top], [-0.18, top], [-0.35, gird], [-1.05, gird]], 'rgba(255,255,255,0.45)');
+    f([[0.18, top], [0.55, top], [1.05, gird], [0.35, gird]], 'rgba(0,20,60,0.12)');
+    f([[-0.35, gird], [0.35, gird], [0, tip]], 'rgba(255,255,255,0.3)');
+    f([[0.35, gird], [1.05, gird], [0, tip]], 'rgba(0,20,60,0.22)');
+    g.beginPath(); g.moveTo(cx - r * 1.05, gird); g.lineTo(cx + r * 1.05, gird);
+    for (const [a, b] of [[-0.18, -0.35], [0.18, 0.35]]) { g.moveTo(cx + a * r, top); g.lineTo(cx + b * r, gird); g.lineTo(cx, tip); }
+    g.moveTo(cx - r * 0.55, top); g.lineTo(cx - r * 0.35, gird); g.moveTo(cx + r * 0.55, top); g.lineTo(cx + r * 0.35, gird);
+    g.lineWidth = Math.max(1.5, r * 0.035); g.strokeStyle = 'rgba(10,26,60,0.45)'; g.stroke();
+    shapePath(g, shape, cx, cy, r);
+  }
   g.lineWidth = Math.max(3, r * 0.09); g.strokeStyle = 'rgba(10,26,60,0.85)'; g.stroke(); g.restore();
 }
 function blob(g, cx, cy, r, color) {                 // a splash of paint

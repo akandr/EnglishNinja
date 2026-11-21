@@ -4,13 +4,13 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=132';
+import { loadAudioBuffer } from './audio.js?v=133';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=132';
-import * as W from './words.js?v=132';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=132';
-import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=132';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=133';
+import * as W from './words.js?v=133';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=133';
+import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=133';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;

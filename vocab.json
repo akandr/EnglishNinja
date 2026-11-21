@@ -34,9 +34,10 @@
     "heart",
     "rectangle",
     "oval",
-    "diamond",
+    "rhombus",
     "hexagon",
-    "arrow"
+    "arrow",
+    "diamond"
    ]
   },
   {
@@ -594,17 +595,17 @@
    },
    "cat": "shapes"
   },
-  "diamond": {
-   "en": "diamond",
+  "rhombus": {
+   "en": "rhombus",
    "pl": "romb",
    "img": {
-    "shape": "diamond"
+    "shape": "rhombus"
    },
    "say": {
-    "q1": "Find the diamond.",
-    "q2": "Where is the diamond?",
-    "a": "This is a diamond.",
-    "t": "That's a diamond."
+    "q1": "Find the rhombus.",
+    "q2": "Where is the rhombus?",
+    "a": "This is a rhombus.",
+    "t": "That's a rhombus."
    },
    "cat": "shapes"
   },
@@ -633,6 +634,21 @@
     "q2": "Where is the arrow?",
     "a": "This is an arrow.",
     "t": "That's an arrow."
+   },
+   "cat": "shapes"
+  },
+  "diamond": {
+   "en": "diamond",
+   "pl": "diament",
+   "img": {
+    "shape": "diamond",
+    "color": "#8fdcff"
+   },
+   "say": {
+    "q1": "Find the diamond.",
+    "q2": "Where is the diamond?",
+    "a": "This is a diamond.",
+    "t": "That's a diamond."
    },
    "cat": "shapes"
   },
