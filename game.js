@@ -4,13 +4,13 @@
 // creature giggles and runs away, the right one goes poof and the barrier opens. Storytellers on
 // the way say simple things in English (Polish captions). No timer, nothing to lose.
 
-import { loadAudioBuffer } from './audio.js?v=134';
+import { loadAudioBuffer } from './audio.js?v=135';
 // own version for this game's audio: browsers keep audio for weeks
 const AUDIO_VER = 'en20261120a';
-import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=134';
-import * as W from './words.js?v=134';
-import { loadFactPics, stripHtml, markWords } from './factpics.js?v=134';
-import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=134';
+import { buildWorld, BIOMES, DECOR, C, H } from './world.js?v=135';
+import * as W from './words.js?v=135';
+import { loadFactPics, stripHtml, markWords } from './factpics.js?v=135';
+import { makeCrystal, drawCrystal, crystalColour } from './treasure.js?v=135';
 
 const TS = 16, SC = 3, T = TS * SC;                 // tiles: 16 px drawn at 3x
 const TILES_PER_S = 5.4;
@@ -105,7 +105,7 @@ const voiceFree = () => !qTimer && !queue.length && performance.now() > speaking
 // --- state -------------------------------------------------------------------
 let canvas, g, shade, sg, world, cfg, qs, running = false, paused = false, lastT = 0, onEnd = null;
 let hero, heroKey = 'NinjaFire', cam = { x: 0, y: 0 }, qi = 0, activeGate = -1, mistakes = 0, firstTry = 0, qMistakes = 0, finishT = -1, clock = 0;
-let gemsTaken = 0, lockT = 0, darkNow = 0;
+let gemsTaken = 0, lockT = 0, darkNow = 0, hush = false, hushUntil = 0;   // no throwing while a mistake is explained
 const MAGNET_S = 20, MON_TPS = 1.5;
 let mons = [], magnetLeft = 0, invuln = 0, trail = [], chased = 0, hits = 0, thrown = 0;
 let birds = [], fish = [], birdT = 6, stars = [], flyCards = [], poofs = [];
@@ -200,7 +200,7 @@ export async function startGame(c) {
   magnetLeft = invuln = 0; trail = []; chased = hits = thrown = 0; birds = []; fish = []; birdT = 4; stars = []; flyCards = []; poofs = [];
   hero = { x: (world.start.x + 0.5) * T, y: (world.start.y + 0.5) * T, tx: world.start.x, ty: world.start.y, fx: world.start.x, fy: world.start.y, moveT: 1, dir: 3, frame: 0, moving: false, aim: { x: 1, y: 0 }, throwT: 0 };
   cam.x = hero.x; cam.y = hero.y;
-  finish.done = false; landShown = -1; gemsTaken = 0; gemCounts = [0, 0, 0, 0, 0]; lockT = 0; darkNow = 0;
+  finish.done = false; landShown = -1; gemsTaken = 0; gemCounts = [0, 0, 0, 0, 0]; lockT = 0; darkNow = 0; hush = false; hushUntil = 0;
   el('gem-box').classList.add('hidden');
   el('gem-box').innerHTML = GEMS.map((cc, i) => `<span class="gc hidden" id="gc${i}" style="--h:${cc.h};--l:${cc.l}%"><i></i><b>0</b></span>`).join('');
   world.gems.forEach((gm, i) => { gm.c = (i * 3 + Math.floor(Math.random() * 5)) % 5; gm.ph = Math.random() * 6.28; });
@@ -230,7 +230,7 @@ function updateHud() {
   else { el('q-text').textContent = '➜'; box.classList.remove('solved'); }
   el('dots').innerHTML = qs.map((_, i) => `<i class="${i < qi ? 'done' : i === qi ? 'now' : ''}"></i>`).join('');
 }
-function repeatQuestion() { if (running && qs && qs[qi] && finishT < 0) { queue.length = 0; clearTimeout(qTimer); qTimer = null; const ms = speak([W.clipQ(qs[qi].id, qs[qi].variant)]); speakingUntil = performance.now() + ms + 400; } }
+function repeatQuestion() { if (running && qs && qs[qi] && finishT < 0) { queue.length = 0; clearTimeout(qTimer); qTimer = null; const ms = speak([W.clipQ(qs[qi].id, qs[qi].variant)]); speakingUntil = performance.now() + ms + 400; if (hush) { hush = false; hushUntil = performance.now() + ms; } } }
 function caption(name, textS, ms, pl = '', factId = null) {
   const strip = factId ? stripHtml(factId, textS, ms) : '';
   el('npc-pics').innerHTML = strip; el('npc-pics').classList.toggle('hidden', !strip);
@@ -258,6 +258,7 @@ function update(dt) {
   if (finishT >= 0) { ix = iy = 0; }
   if (Math.hypot(ix, iy) > 0.3) { const k = Math.hypot(ix, iy); hero.aim = { x: ix / k, y: iy / k }; }
   if (lockT > 0) lockT -= dt;
+  { const w = hush || performance.now() < hushUntil; if (w !== hero.wait) { hero.wait = w; el('throw-btn').classList.toggle('wait', w); } }
   if (hero.throwT > 0) hero.throwT -= dt;
   // tile-by-tile movement: glide from the centre of one tile to the next
   if (hero.moveT >= 1) {
@@ -337,6 +338,8 @@ function update(dt) {
 // --- shurikens -----------------------------------------------------------------------
 function throwStar() {
   if (!running || paused || finishT >= 0 || !hero) return;
+  if (hush && voiceFree()) hush = false;                     // safety: the question was dropped
+  if (hush || performance.now() < hushUntil) return;
   if (stars.filter(s => !s.dead).length >= 2) return;
   const dirs = [[0, 1], [0, -1], [-1, 0], [1, 0]];
   let ax = hero.aim.x, ay = hero.aim.y;
@@ -504,7 +507,8 @@ function hit(cr, s) {
     for (let k = 0; k < 10; k++) parts.push({ kind: 'dot', x: s.x, y: s.y, vx: -s.vx * 0.15 + rnd(-90, 90), vy: -s.vy * 0.15 + rnd(-140, -20), t: 0, life: 0.5, color: '#dfe6ff', g: 500 });
     dropLow();
     enqueue({ clips: ['e_oops', `w_${cr.val}_t`], gap: 700 });           // what that creature had, then the word once more
-    enqueue({ clips: [W.clipQ(f.id, f.variant)], gap: 600 });
+    hush = true;
+    enqueue({ clips: [W.clipQ(f.id, f.variant)], gap: 600, onStart: (ms) => { hush = false; hushUntil = performance.now() + ms; } });
   }
 }
 
